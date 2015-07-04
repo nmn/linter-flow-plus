@@ -1,8 +1,9 @@
 {
   "name": "linter-flow-plus",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A better and maintainer linter for flow types",
-  "main": "build/index.js",
+  "activationCommands": [],
+  "main": "./build/index.js",
   "scripts": {
     "build": "babel src --out-dir build"
   },
@@ -16,6 +17,9 @@
   ],
   "author": "Naman Goel",
   "license": "MIT",
+  "engines": {
+    "atom": ">1.0.1"
+  },
   "bugs": {
     "url": "https://github.com/nmn/linter-flow-plus/issues"
   },
@@ -23,7 +27,7 @@
   "providedServices": {
     "linter": {
       "versions": {
-        "1.0.4": "provideLinter"
+        "1.0.0": "provideLinter"
       }
     }
   }
