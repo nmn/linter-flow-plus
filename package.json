@@ -18,7 +18,7 @@
   "author": "Naman Goel",
   "license": "MIT",
   "engines": {
-    "atom": ">1.0.1"
+    "atom": ">0.50.0"
   },
   "bugs": {
     "url": "https://github.com/nmn/linter-flow-plus/issues"
