@@ -1,8 +1,8 @@
 /* global atom */
 // import fs from 'fs'
-// import path from 'path'
+import path from 'path'
 // import {sync} from 'resolve'
-// import {exec} from 'child_process'
+import {spawn} from 'child_process'
 // import {CompositeDisposable} from 'atom'
 // import {allowUnsafeNewFunction} from 'loophole'
 
@@ -14,11 +14,46 @@ if(!linterPackage){
 // const linterPath = linterPackage.path
 // const findFile = require(`${linterPath}/lib/util`)
 
+let cmdString = 'flow'
+
+function combineArray(obj, error){
+  obj.descr =
+    obj.descr ? error.descr : obj.descr + ' ' + error.descr
+  obj.level =
+    obj.level ? error.level :
+    obj.level === 'error' || error.level === 'error' ? 'error' : 'warning'
+  obj.start =
+    obj.start !== undefined ? Math.min(obj.start, error.start) : error.start
+  obj.end =
+    obj.end !== undefined ? Math.max(obj.end, error.end) : error.end
+  obj.line =
+    obj.line !== undefined ? Math.min(obj.line, error.line) : error.line
+  obj.endline =
+    obj.endline !== undefined ? Math.max(obj.endline, error.endline) : error.endline
+  obj.path = error.path
+  return obj
+}
+
+function flowMessageToLinterMessage(message) {
+  // h/t Nuclide-flow
+  // It's unclear why the 1-based to 0-based indexing works the way that it
+  // does, but this has the desired effect in the UI, in practice.
+  var range = [ [message.line - 1, message.start - 1]
+              , [message.endline - 1, message.end]
+              ]
+
+  return { type: 'Error'
+         , text: message.descr
+         , filePath: message.path
+         , range: range
+         }
+}
+
 module.exports =
   { config:
-      { testRuleOne:
+      { pathToFlowExecutable:
           { type: 'string'
-          , default: ''
+          , default: 'flow'
           }
       , testRuleTwo:
           { type: 'boolean'
@@ -29,7 +64,7 @@ module.exports =
       console.log('activating linter-flow-plus')
 
       // getting custom value
-      // const customValueOne: string = atom.config.get('linter-flow-plus.testRuleOne')
+      cmdString = atom.config.get('linter-flow-plus.pathToFlowExecutable')
     }
   , deactivate(){
       console.log('deactivating linter-flow-plus')
@@ -41,18 +76,55 @@ module.exports =
         , lintOnFly: true
         , lint(TextEditor){
             const filePath = TextEditor.getPath()
-            console.log('TextEditor: ', TextEditor)
+            const fileText = TextEditor.buffer && TextEditor.buffer.cachedText
 
-            // no errors: return []
+            if(fileText.indexOf('@flow') === -1){
+              return []
+            }
 
-            return [
-              { type: 'warning'
-              , html: '<span class="badge badge-flexible">21</span> Test Error'
-              , filePath: filePath
-              , range: [[0, 0], [0, 1]]
-              }
-            ]
-
+            return new Promise(function(resolve, reject){
+              const command =
+                spawn( cmdString
+                     , ['check-contents', filePath, '--json', '--no-auto-start', '--timeout', '1']
+                     , { cwd: path.dirname(filePath) }
+                     )
+              let data = '', errors = ''
+              command.stdout.on('data', function(d){
+                data += d
+              })
+              command.stderr.on('data', function(d){
+                errors += d
+              })
+              command.on('close', function(err){
+                if(err){
+                  reject(errors)
+                } else if(!data || errors){
+                  resolve([])
+                } else {
+                  data = JSON.parse(data.substr(data.indexOf('{')))
+                  if(!data.errors || data.passed){
+                    resolve([])
+                  } else {
+                    resolve(
+                      data.errors
+                        .map(obj => obj.message)
+                        .map(arr => arr.length === 1 ? arr[0] : arr.reduce(combineArray, {}))
+                        .map(flowMessageToLinterMessage)
+                    )
+                  }
+                }
+              })
+            })
+            .catch(err => {
+              console.error(err)
+              return [
+                { type: 'warning'
+                , html: 'Error Linting'
+                , filePath: filePath
+                , range: [[0, 0], [0, 1]]
+                }
+              ]
+            })
           }
         }
 
