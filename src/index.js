@@ -18,9 +18,9 @@ let cmdString = 'flow'
 
 function combineArray(obj, error){
   obj.descr =
-    obj.descr ? error.descr : obj.descr + ' ' + error.descr
+    !obj.descr ? error.descr : obj.descr + ' ' + error.descr
   obj.level =
-    obj.level ? error.level :
+    !obj.level ? error.level :
     obj.level === 'error' || error.level === 'error' ? 'error' : 'warning'
   obj.start =
     obj.start !== undefined ? Math.min(obj.start, error.start) : error.start
@@ -42,7 +42,7 @@ function flowMessageToLinterMessage(message) {
               , [message.endline - 1, message.end]
               ]
 
-  return { type: 'Error'
+  return { type: message.level
          , text: message.descr
          , filePath: message.path
          , range: range

@@ -27,8 +27,8 @@ if (!linterPackage) {
 var cmdString = 'flow';
 
 function combineArray(obj, error) {
-  obj.descr = obj.descr ? error.descr : obj.descr + ' ' + error.descr;
-  obj.level = obj.level ? error.level : obj.level === 'error' || error.level === 'error' ? 'error' : 'warning';
+  obj.descr = !obj.descr ? error.descr : obj.descr + ' ' + error.descr;
+  obj.level = !obj.level ? error.level : obj.level === 'error' || error.level === 'error' ? 'error' : 'warning';
   obj.start = obj.start !== undefined ? Math.min(obj.start, error.start) : error.start;
   obj.end = obj.end !== undefined ? Math.max(obj.end, error.end) : error.end;
   obj.line = obj.line !== undefined ? Math.min(obj.line, error.line) : error.line;
@@ -43,7 +43,7 @@ function flowMessageToLinterMessage(message) {
   // does, but this has the desired effect in the UI, in practice.
   var range = [[message.line - 1, message.start - 1], [message.endline - 1, message.end]];
 
-  return { type: 'Error',
+  return { type: message.level,
     text: message.descr,
     filePath: message.path,
     range: range
