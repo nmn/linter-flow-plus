@@ -106,6 +106,9 @@ module.exports = { config: { pathToFlowExecutable: { type: 'string',
               }
             }
           });
+
+          command.stdin.write(fileText);
+          command.stdin.end();
         })['catch'](function (err) {
           console.error(err);
           return [{ type: 'warning',

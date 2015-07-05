@@ -114,6 +114,9 @@ module.exports =
                   }
                 }
               })
+
+              command.stdin.write(fileText)
+              command.stdin.end()
             })
             .catch(err => {
               console.error(err)
