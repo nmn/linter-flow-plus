@@ -109,7 +109,7 @@ module.exports =
                     let errors = data.errors
                         .map(obj => obj.message)
                         .map(flowMessageToLinterMessage)
-                    console.debug(errors)
+                    console.log(errors)
                     resolve(errors)
                   }
                 }
