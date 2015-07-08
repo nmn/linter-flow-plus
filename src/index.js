@@ -34,16 +34,16 @@ function flowMessageToLinterMessage(arr) {
   // h/t Nuclide-flow
   // It's unclear why the 1-based to 0-based indexing works the way that it
   // does, but this has the desired effect in the UI, in practice.
-  var message = arr[0]
+  var message = Array.isArray(arr) ? arr[0] : arr
 
   var obj =
     { type: message.level
-    , text: message.descr
+    , text: Array.isArray(arr) ? arr.map(obj => obj.descr).join(' ') : message.descr
     , filePath: message.path
     , range: extractRange(message)
     }
 
-  if(arr.length > 1){
+  if(Array.isArray(arr) && arr.length > 1){
     obj.trace = arr.slice(1).map(flowMessageToTrace)
   }
 
