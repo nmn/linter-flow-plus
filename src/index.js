@@ -16,37 +16,38 @@ if(!linterPackage){
 
 let cmdString = 'flow'
 
-function combineArray(obj, error){
-  obj.descr =
-    !obj.descr ? error.descr : obj.descr + ' ' + error.descr
-  obj.level =
-    !obj.level ? error.level :
-    obj.level === 'error' || error.level === 'error' ? 'error' : 'warning'
-  obj.start =
-    obj.start !== undefined ? Math.min(obj.start, error.start) : error.start
-  obj.end =
-    obj.end !== undefined ? Math.max(obj.end, error.end) : error.end
-  obj.line =
-    obj.line !== undefined ? Math.min(obj.line, error.line) : error.line
-  obj.endline =
-    obj.endline !== undefined ? Math.max(obj.endline, error.endline) : error.endline
-  obj.path = error.path
-  return obj
+function extractRange(message){
+  return [ [message.line - 1, message.start - 1]
+         , [message.endline - 1, message.end]
+         ]
 }
 
-function flowMessageToLinterMessage(message) {
+function flowMessageToTrace(message){
+  return { type: 'Trace'
+         , text: message.descr
+         , filePath: message.path
+         , range: extractRange(message)
+         }
+}
+
+function flowMessageToLinterMessage(arr) {
   // h/t Nuclide-flow
   // It's unclear why the 1-based to 0-based indexing works the way that it
   // does, but this has the desired effect in the UI, in practice.
-  var range = [ [message.line - 1, message.start - 1]
-              , [message.endline - 1, message.end]
-              ]
+  var message = arr[0]
 
-  return { type: message.level
-         , text: message.descr
-         , filePath: message.path
-         , range: range
-         }
+  var obj =
+    { type: message.level
+    , text: message.descr
+    , filePath: message.path
+    , range: extractRange(message)
+    }
+
+  if(arr.length > 1){
+    obj.trace = arr.slice(1).map(flowMessageToTrace)
+  }
+
+  return obj
 }
 
 module.exports =
@@ -85,7 +86,7 @@ module.exports =
             return new Promise(function(resolve, reject){
               const command =
                 spawn( cmdString
-                     , ['check-contents', filePath, '--json', '--no-auto-start', '--timeout', '1']
+                     , ['check-contents', filePath, '--json', '--timeout', '1']
                      , { cwd: path.dirname(filePath) }
                      )
               let data = '', errors = ''
@@ -108,7 +109,6 @@ module.exports =
                     resolve(
                       data.errors
                         .map(obj => obj.message)
-                        .map(arr => arr.length === 1 ? arr[0] : arr.reduce(combineArray, {}))
                         .map(flowMessageToLinterMessage)
                     )
                   }
