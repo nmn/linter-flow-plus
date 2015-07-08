@@ -106,11 +106,11 @@ module.exports =
                   if(!data.errors || data.passed){
                     resolve([])
                   } else {
-                    resolve(
-                      data.errors
+                    let errors = data.errors
                         .map(obj => obj.message)
                         .map(flowMessageToLinterMessage)
-                    )
+                    console.debug(errors)
+                    resolve(errors)
                   }
                 }
               })
