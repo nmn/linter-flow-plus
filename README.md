@@ -2,7 +2,7 @@
 
 A better flowtype linter that works on the fly.
 
-![linter-demo](http://naman.s3.amazonaws.com/linter-flow-plus/linter-flow-plus.gif)
+![linter-demo](https://naman.s3.amazonaws.com/linter-flow-plus/linter-flow-plus.gif)
 
 Another project, linter-flow doesn't work and hasn't been maintained for a long time. IDE-flow and Nuclide do work, but neither of them work on the fly. They only give you errors on save.
 
