@@ -38,7 +38,7 @@ function flowMessageToLinterMessage(arr) {
 
   var obj =
     { type: message.level
-    , text: Array.isArray(arr) ? arr.map(obj => obj.descr).join(' ') : message.descr
+    , text: Array.isArray(arr) ? arr.map(o => o.descr).join(' ') : message.descr
     , filePath: message.path
     , range: extractRange(message)
     }
@@ -106,11 +106,11 @@ module.exports =
                   if(!data.errors || data.passed){
                     resolve([])
                   } else {
-                    let errors = data.errors
+                    let errs = data.errors
                         .map(obj => obj.message)
                         .map(flowMessageToLinterMessage)
-                    console.log(errors)
-                    resolve(errors)
+                    console.log(errs)
+                    resolve(errs)
                   }
                 }
               })
@@ -122,7 +122,7 @@ module.exports =
               console.error(err)
               return [
                 { type: 'warning'
-                , html: 'Error Linting'
+                , html: 'linter-flow-plus : Error Linting, check the console for details'
                 , filePath: filePath
                 , range: [[0, 0], [0, 1]]
                 }
