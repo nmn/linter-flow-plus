@@ -79,7 +79,7 @@ module.exports =
             const filePath = TextEditor.getPath()
             const fileText = TextEditor.buffer && TextEditor.buffer.cachedText
 
-            if(fileText.indexOf('@flow') === -1){
+            if(!fileText || fileText.indexOf('@flow') === -1){
               return []
             }
 
