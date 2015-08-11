@@ -1,9 +1,8 @@
+/* global atom */
+// import fs from 'fs'
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-/* global atom */
-// import fs from 'fs'
 
 var _path = require('path');
 
@@ -18,7 +17,7 @@ var _child_process = require('child_process');
 
 var linterPackage = atom.packages.getLoadedPackage('linter');
 if (!linterPackage) {
-  atom.notifications.addError('Linter should be installed first, `apm install linter`', { dismissable: true });
+  atom.notifications.addError('Linter should be installed first, `apm install linter`', { dismissable: true }); // eslint-disable-line
 }
 
 // const linterPath = linterPackage.path
@@ -45,8 +44,8 @@ function flowMessageToLinterMessage(arr) {
   var message = Array.isArray(arr) ? arr[0] : arr;
 
   var obj = { type: message.level,
-    text: Array.isArray(arr) ? arr.map(function (obj) {
-      return obj.descr;
+    text: Array.isArray(arr) ? arr.map(function (o) {
+      return o.descr;
     }).join(' ') : message.descr,
     filePath: message.path,
     range: extractRange(message)
@@ -83,12 +82,12 @@ module.exports = { config: { pathToFlowExecutable: { type: 'string',
         var filePath = TextEditor.getPath();
         var fileText = TextEditor.buffer && TextEditor.buffer.cachedText;
 
-        if (fileText.indexOf('@flow') === -1) {
+        if (!fileText || fileText.indexOf('@flow') === -1) {
           return [];
         }
 
         return new Promise(function (resolve, reject) {
-          var command = _child_process.spawn(cmdString, ['check-contents', filePath, '--json', '--timeout', '1'], { cwd: _path2['default'].dirname(filePath) });
+          var command = (0, _child_process.spawn)(cmdString, ['check-contents', filePath, '--json', '--timeout', '1'], { cwd: _path2['default'].dirname(filePath) });
           var data = '',
               errors = '';
           command.stdout.on('data', function (d) {
@@ -107,11 +106,11 @@ module.exports = { config: { pathToFlowExecutable: { type: 'string',
               if (!data.errors || data.passed) {
                 resolve([]);
               } else {
-                var _errors = data.errors.map(function (obj) {
+                var errs = data.errors.map(function (obj) {
                   return obj.message;
                 }).map(flowMessageToLinterMessage);
-                console.log(_errors);
-                resolve(_errors);
+                console.log(errs);
+                resolve(errs);
               }
             }
           });
@@ -121,7 +120,7 @@ module.exports = { config: { pathToFlowExecutable: { type: 'string',
         })['catch'](function (err) {
           console.error(err);
           return [{ type: 'warning',
-            html: 'Error Linting',
+            html: 'linter-flow-plus : Error Linting, check the console for details',
             filePath: filePath,
             range: [[0, 0], [0, 1]]
           }];
@@ -132,4 +131,3 @@ module.exports = { config: { pathToFlowExecutable: { type: 'string',
     return provider;
   }
 };
-// eslint-disable-line
