@@ -1,6 +1,6 @@
 {
   "name": "linter-flow-plus",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "A better and maintained linter for flow types",
   "activationCommands": [],
   "main": "./build/index.js",
