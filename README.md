@@ -1,30 +1,33 @@
 # linter-flow-plus
 
-A better flowtype linter that works on the fly.
+A better linter plugin for Facebook's [Flow JS typechecker](http://flowtype.org/). It works on the fly.
 
 ![linter-demo](https://naman.s3.amazonaws.com/linter-flow-plus/linter-flow-plus.gif)
 
-Another project, linter-flow doesn't work and hasn't been maintained for a long time. IDE-flow and Nuclide do work, but neither of them work on the fly. They only give you errors on save.
+### How to use it
 
-Nuclide will support on-the-fly linting soon, however, at which point this linter may be deprecated. (There may be some value in having a flowtype linter that does nothing else)
-
-Please Note: IDE-flow and Nuclide provide other features such as autocomplete, type definitions on hover etc. Please continue to use those services for those features. (possibly in addition to linter-flow-plus)
-
-### Installation
-
-linter-flow-plus depends on the linter package. Please install that before you install this package.
-You also need to install flow on your machine. Then you can either make flow available on the `PATH` or configure linter-flow-plus by giving it the path to your local flow executable.
+1. Install [flow](http://flowtype.org/)
+2. Confirm the `linter` package is installed and enabled for Atom.
+3. Create a .flowconfig file at the root of your repo. (You can use the `flow init` command to do so)
+4. Install the linter-flow-plus package using the installer screen or the `apm` cli.
+5. At the `/* @flow */` to any JS file to enable on-the-fly flow linting when you code!
 
 Please see the official flow website for details on how to install flow. My recommendation is to clone down the repo and build it yourself for the best ES6 support possible.
 
+### Why not X?
+
+1. A similarly named package: linter-flow is now a mirror. The development happens for both packages in parallel.
+2. IDE-flow works relatively well, but it doesn't lint on-the-fly and doesn't integrate with the linter package.
+3. Nuclide has too many problems for now to be reliable. It also involves installing a large number of other packages.
+
+linter-flow-plus is made to be a simple package that does one thing well.
+
+Please Note: IDE-flow and Nuclide provide other features such as autocomplete, type definitions on hover etc. Please continue to use those services for those features. (possibly in addition to linter-flow-plus)
 
 ### features
 
-linter-flow-plus has on-the-fly linting using flow types. It also provides clean errors with traces. No other linter for flow currently supports traces. (When an error is caused by a definition somewhere else in your codebase.)
-
-My pull request for Traces in Nuclide has been accepted and you can expect traces in Nuclide in the future.
-
-That's it. That is the very reason I built this linter. It strives to do just one thing. I may build other projects for autocomplete or type definitions using flow, or I may not. But this linter works and it will never do anything other than lint your code.
+linter-flow-plus has on-the-fly linting using flow types. It also provides clean errors with traces.
+(Only Nuclide's trace support is based on the same code, and no other implementation exists currently)
 
 ### Limitations
 

@@ -1,6 +1,6 @@
 {
   "name": "linter-flow-plus",
-  "version": "1.9.0",
+  "version": "2.0.0",
   "description": "A better and maintained linter for flow types",
   "activationCommands": [],
   "main": "./build/index.js",
@@ -30,5 +30,8 @@
         "1.0.0": "provideLinter"
       }
     }
+  },
+  "devDependencies": {
+    "babel": "^5.8.23"
   }
 }
