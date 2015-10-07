@@ -73,6 +73,7 @@ module.exports =
   , provideLinter(){
       const provider =
         { grammarScopes: ['source.js', 'source.js.jsx', 'source.babel', 'source.js-semantic', 'source.es6']
+        , name: 'flow-plus'
         , scope: 'file'
         , lintOnFly: true
         , lint(TextEditor){
