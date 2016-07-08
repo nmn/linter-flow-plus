@@ -1,5 +1,7 @@
 # linter-flow-plus
 
+# DEPRECATED: USE Linter-Flow
+
 A better linter plugin for Facebook's [Flow JS typechecker](http://flowtype.org/). It works on the fly.
 
 ![linter-demo](https://naman.s3.amazonaws.com/linter-flow-plus/linter-flow-plus.gif)
